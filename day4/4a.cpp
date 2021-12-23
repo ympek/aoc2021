@@ -9,15 +9,20 @@ constexpr int NUMBERS_PER_BOARD = 25;
 
 void splitString(std::string str, std::vector<int>& outputVector, std::string delim = ",")
 {
+  std::cout << "PARSING>>>>>\n";
   size_t pos = 0;
   std::string token;
 
-  while((pos = str.find(delim, pos)) != std::string::npos)
+  while((pos = str.find(delim)) != std::string::npos)
   {
     token = str.substr(0, pos);
+    std::cout << "token: " << token << " stoiToken: " << std::stoi(token) << " pos: " << pos << "\n";
     outputVector.push_back(std::stoi(token));
     str.erase(0, pos + delim.length());
+    std::cout << "str after erase:\n" << str << "\n";
   }
+  // don't forget last element
+  outputVector.push_back(std::stoi(str));
 }
 
 class Board {
@@ -77,6 +82,19 @@ public:
     return (numbers.size() == NUMBERS_PER_BOARD);
   }
 
+  void print() {
+    for (int i = 0; i < numbers.size(); i++) {
+      if (i % 5 == 0) {
+        std::cout << "\n";
+      }
+      if (marks.test(i)) {
+        std::cout << " [" << numbers[i] << "] ";
+      } else {
+        std::cout << " " << numbers[i] << " ";
+      }
+    }
+  }
+
 private:
   int ptr;
   // board will hold BOARD_SIZE * BOARD_SIZE numbers;
@@ -123,13 +141,19 @@ int main() {
   // ok now we parsed data, duh
   for (int luckyNumber : drawnNumbers) {
     // drawing a number
+    std::cout << "Drawing a number: " << luckyNumber << "\n";
+
     std::for_each(boards.begin(), boards.end(), [&](Board& b) {
       b.mark(luckyNumber);
       if (b.isWinning() && !hasResult) {
+        std::cout << "WINNER IS THERE=================================\n";
         hasResult = true;
         int sumOfUnmarked = b.sumUnmarked();
         result = sumOfUnmarked * luckyNumber;
       }
+      std::cout << "\n";
+      b.print();
+      std::cout << "\n";
     });
     if (hasResult) {
       std::cout << "Lucky number was " << luckyNumber;
